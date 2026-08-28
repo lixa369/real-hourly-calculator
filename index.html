@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#f7f8f2" />
+    <meta name="description" content="在当前设备浏览器内算一算你的每小时综合投入回报。" />
+    <title>打工人真实时薪计算器</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+    <link rel="stylesheet" href="assets/compatibility.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="view is-active home-view" data-view="home" aria-labelledby="home-title">
+        <div class="brand-lockup"><span class="brand-mark" aria-hidden="true">¥</span><span>打工人真实时薪计算器</span></div>
+        <div class="hero-copy">
+          <p class="eyebrow">给自己的时间算笔明白账</p>
+          <h1 id="home-title">看看你的每小时投入，<br />能换来多少回报。</h1>
+          <p>把时间、通勤和日常开销一起算一算，帮你更了解自己的工作节奏。</p>
+        </div>
+        <div class="hero-graphic" aria-hidden="true">
+          <div class="sun"></div><div class="coin coin-one">¥</div><div class="coin coin-two">¥</div>
+          <div class="clock"><span></span><i></i></div><div class="plant"><b></b><b></b><b></b></div>
+          <div class="desk"><span></span></div>
+        </div>
+        <div class="home-actions">
+          <button class="button button-primary" type="button" data-action="start">开始计算 <span aria-hidden="true">→</span></button>
+          <p class="privacy-note"><span aria-hidden="true">✓</span> 免费使用 · 数据仅在本地计算</p>
+        </div>
+      </section>
+
+      <section class="view form-view" data-view="form" aria-labelledby="form-title" hidden>
+        <header class="page-header"><button class="icon-button" type="button" data-action="home" aria-label="返回首页">←</button><p class="step">填写 6 项信息</p></header>
+        <div class="page-intro"><p class="eyebrow">慢慢填，不着急</p><h1 id="form-title">先告诉我你的<br />工作情况</h1><p>所有数据都只在这台设备上计算。</p></div>
+        <form id="calculator-form" novalidate>
+          <div class="field-list">
+            <label class="field"><span class="field-title">月收入</span><span class="input-wrap"><input name="monthlyIncome" type="number" min="0" max="100000" step="0.01" inputmode="decimal" value="3000" required /><em>元/月</em></span><small>按你想比较的税前或税后口径填写即可。</small><span class="field-error" data-error-for="monthlyIncome"></span></label>
+            <label class="field"><span class="field-title">每月工作天数</span><span class="input-wrap"><input name="workDays" type="number" min="1" max="31" step="1" inputmode="numeric" value="22" required /><em>天/月</em></span><small>用于估算月度时间与按天支出。</small><span class="field-error" data-error-for="workDays"></span></label>
+            <label class="field"><span class="field-title">每天工作时长</span><span class="input-wrap"><input name="dailyWorkHours" type="number" min="1" max="24" step="0.1" inputmode="decimal" value="8" required /><em>小时/天</em></span><small>只计算实际工作时间，不包括吃饭和休息。</small><span class="field-error" data-error-for="dailyWorkHours"></span></label>
+            <label class="field"><span class="field-title">每天通勤时间</span><span class="input-wrap"><input name="dailyCommuteHours" type="number" min="0" max="10" step="0.1" inputmode="decimal" value="1" required /><em>小时/天</em></span><small>上下班往返总时间，可以填 0。</small><span class="field-error" data-error-for="dailyCommuteHours"></span></label>
+            <label class="field"><span class="field-title">每天工作相关支出</span><span class="input-wrap"><input name="dailyWorkExpense" type="number" min="0" step="0.01" inputmode="decimal" value="20" required /><em>元/天</em></span><small>例如工作期间吃饭、交通、停车等。</small><span class="field-error" data-error-for="dailyWorkExpense"></span></label>
+            <label class="field"><span class="field-title">每月住宿成本</span><span class="input-wrap"><input name="monthlyHousingCost" type="number" min="0" step="0.01" inputmode="decimal" value="500" required /><em>元/月</em></span><small>如住宿与工作无关，可以填写 0。</small><span class="field-error" data-error-for="monthlyHousingCost"></span></label>
+          </div>
+          <button class="button button-primary" type="submit">计算我的真实时薪 <span aria-hidden="true">→</span></button>
+        </form>
+      </section>
+
+      <section class="view results-view" data-view="results" aria-labelledby="results-title" hidden>
+        <header class="page-header"><button class="icon-button" type="button" data-action="form" aria-label="返回修改">←</button><p class="step">你的计算结果</p></header>
+        <div class="results-intro"><p class="eyebrow">看见投入，也看见自己</p><h1 id="results-title">这是一份属于你的<br />投入参考</h1></div>
+        <article class="hero-result"><p>每小时综合回报参考</p><strong data-result="comprehensiveHourlyRate">¥0.00</strong><span>/ 小时</span><div class="result-divider"></div><p class="hero-result-copy">按你填写的情况估算，你每投入一小时，综合回报约为 <b data-result="comprehensiveHourlyRateCopy">¥0.00 / 小时</b>。这份结果帮你看见时间和成本的投入，不定义你的价值。</p></article>
+        <section class="tip-section" aria-label="参考提示"><span class="tip-icon" aria-hidden="true">✦</span><p data-result="message"></p><small>每一份工作都有不容易的地方。这是根据已填写数据生成的参考，不评价你的工作或选择。</small></section>
+        <section class="metrics-section" aria-labelledby="metrics-title"><div class="section-heading"><h2 id="metrics-title">这笔账是这样算的</h2><span>按月估算</span></div><div class="metrics-grid">
+          <article class="metric"><p>月收入</p><strong data-result="monthlyIncome"></strong></article><article class="metric"><p>实际工作时间</p><strong data-result="monthlyWorkHours"></strong></article>
+          <article class="metric"><p>通勤时间</p><strong data-result="monthlyCommuteHours"></strong></article><article class="metric"><p>总投入时间</p><strong data-result="monthlyTotalHours"></strong></article>
+          <article class="metric"><p>工作相关支出</p><strong data-result="monthlyWorkCost"></strong></article><article class="metric"><p>名义时薪</p><strong data-result="nominalHourlyRate"></strong></article>
+          <article class="metric metric-highlight"><p>综合时薪</p><strong data-result="comprehensiveHourlyRateSmall"></strong></article>
+        </div></section>
+        <section class="yearly-insight"><span class="calendar-icon" aria-hidden="true">12</span><div><p>一年投入在工作上的时间</p><strong><span data-result="annualTotalHours"></span> 小时 · 约 <span data-result="equivalentDays"></span> 天</strong><small>如果把这些时间连续放在一起，大约相当于 <span data-result="equivalentDaysCopy"></span> 天。看见这些投入，也是在认真看见自己的努力。</small></div></section>
+        <aside class="disclaimer">以上结果仅根据你填写的数据进行估算，不代表法律意义上的工资、劳动报酬或税务结果。本工具不会上传你的输入数据，计算在当前设备本地完成。</aside>
+        <div class="result-actions"><button class="button button-secondary" type="button" data-action="form">重新计算</button><button class="button button-primary" type="button" data-action="share">分享我的结果 <span aria-hidden="true">↗</span></button></div><p class="share-status" aria-live="polite"></p>
+      </section>
+    </main>
+    <script type="module" src="assets/app.js"></script>
+  </body>
+</html>
