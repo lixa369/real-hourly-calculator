@@ -1,13 +1,16 @@
 import { calculateHourlyReturn, validateInput } from './calculator.js';
-import { initializeAnalytics } from './analytics.js';
-import { analyticsConfig } from './analytics-config.js';
+import { initializeAnalytics, loadAnalyticsConfig } from './analytics.js';
 
 const form = document.querySelector('#calculator-form');
 const views = document.querySelectorAll('[data-view]');
 const shareStatus = document.querySelector('.share-status');
 let lastResult = null;
 let lastValues = null;
-const analytics = initializeAnalytics(analyticsConfig);
+const analyticsReady = loadAnalyticsConfig().then(initializeAnalytics);
+
+function trackAnalyticsEvent(eventName) {
+  analyticsReady.then((analytics) => analytics.track(eventName));
+}
 
 function showView(name) {
   views.forEach((view) => {
@@ -83,7 +86,7 @@ async function shareResult() {
     try {
       await navigator.share({ title: '我的每小时综合回报参考', text });
       shareStatus.textContent = '已打开分享面板。';
-      analytics.track('calculator_share');
+      trackAnalyticsEvent('calculator_share');
       return;
     } catch (error) {
       if (error.name === 'AbortError') return;
@@ -106,7 +109,7 @@ async function shareResult() {
       if (!copied) throw new Error('Copy command was not accepted');
     }
     shareStatus.textContent = '结果文案已复制，可以去分享给朋友。';
-    analytics.track('calculator_copy');
+    trackAnalyticsEvent('calculator_copy');
   } catch {
     shareStatus.textContent = '复制没有完成，请长按结果文字后手动复制。';
   }
@@ -116,7 +119,7 @@ document.querySelectorAll('[data-action]').forEach((button) => {
   button.addEventListener('click', () => {
     const action = button.dataset.action;
     if (action === 'start' || action === 'form') {
-      if (action === 'form' && lastResult) analytics.track('calculator_reset');
+      if (action === 'form' && lastResult) trackAnalyticsEvent('calculator_reset');
       showView('form');
     }
     if (action === 'home') showView('home');
@@ -137,6 +140,6 @@ form.addEventListener('submit', (event) => {
   lastResult = calculateHourlyReturn(lastValues);
   renderResults(lastValues, lastResult);
   shareStatus.textContent = '';
-  analytics.track('calculator_used');
+  trackAnalyticsEvent('calculator_used');
   showView('results');
 });

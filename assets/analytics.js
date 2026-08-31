@@ -59,6 +59,17 @@ export function createEventTracker({ endpoint = '', now = () => Date.now(), send
   };
 }
 
+export async function loadAnalyticsConfig(configLoader = () => import('./analytics-config.js')) {
+  try {
+    const configModule = await configLoader();
+    return configModule.analyticsConfig && typeof configModule.analyticsConfig === 'object'
+      ? configModule.analyticsConfig
+      : {};
+  } catch {
+    return {};
+  }
+}
+
 function loadCloudflareBeacon(token) {
   if (!token || typeof document === 'undefined') return;
 
