@@ -1,4 +1,5 @@
 const EVENT_TITLES = Object.freeze({
+  calculator_visitor: 'Calculator visitor',
   calculator_used: 'Calculator used',
   calculator_reset: 'Calculator reset',
   calculator_share: 'Calculator shared',
@@ -6,6 +7,68 @@ const EVENT_TITLES = Object.freeze({
 });
 
 const USE_EVENT_COOLDOWN_MS = 5000;
+const VISITOR_ID_STORAGE_KEY = 'hourly_calculator_visitor_id';
+const VISITOR_EVENT_RECORDED_KEY = 'hourly_calculator_visitor_recorded';
+const VISITOR_EVENT_CLAIM_KEY = 'hourly_calculator_visitor_claim';
+
+function getBrowserStorage() {
+  try {
+    return typeof window === 'undefined' ? null : window.localStorage;
+  } catch {
+    return null;
+  }
+}
+
+function generateVisitorId() {
+  if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
+  return `visitor-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+}
+
+export function getOrCreateVisitor(storage = getBrowserStorage(), createId = generateVisitorId) {
+  if (!storage) return { visitorId: null, isNew: false };
+
+  try {
+    const existingVisitorId = storage.getItem(VISITOR_ID_STORAGE_KEY);
+    if (existingVisitorId) return { visitorId: existingVisitorId, isNew: false };
+
+    const visitorId = createId();
+    storage.setItem(VISITOR_ID_STORAGE_KEY, visitorId);
+    return { visitorId, isNew: true };
+  } catch {
+    return { visitorId: null, isNew: false };
+  }
+}
+
+export function createVisitorEventClaim(storage = getBrowserStorage(), visitorId, createId = generateVisitorId) {
+  if (!storage || !visitorId) return { shouldTrack: false, confirmDelivered() {} };
+
+  try {
+    if (storage.getItem(VISITOR_EVENT_RECORDED_KEY) === visitorId) {
+      return { shouldTrack: false, confirmDelivered() {} };
+    }
+
+    const claim = `${visitorId}:${createId()}`;
+    storage.setItem(VISITOR_EVENT_CLAIM_KEY, claim);
+    if (storage.getItem(VISITOR_EVENT_CLAIM_KEY) !== claim) {
+      return { shouldTrack: false, confirmDelivered() {} };
+    }
+
+    return {
+      shouldTrack: true,
+      confirmDelivered() {
+        try {
+          if (storage.getItem(VISITOR_EVENT_CLAIM_KEY) !== claim) return;
+          storage.setItem(VISITOR_EVENT_RECORDED_KEY, visitorId);
+          storage.removeItem(VISITOR_EVENT_CLAIM_KEY);
+        } catch {
+          // Analytics delivery must never affect the calculator.
+        }
+      }
+    };
+  } catch {
+    return { shouldTrack: false, confirmDelivered() {} };
+  }
+}
 
 function isAllowedEvent(eventName) {
   return Object.hasOwn(EVENT_TITLES, eventName);
@@ -20,7 +83,7 @@ function isValidGoatCounterEndpoint(endpoint) {
   }
 }
 
-function sendGoatCounterEvent(endpoint, payload) {
+function sendGoatCounterEvent(endpoint, payload, onDelivered) {
   if (typeof Image === 'undefined') return;
 
   const url = new URL(endpoint);
@@ -31,6 +94,7 @@ function sendGoatCounterEvent(endpoint, payload) {
 
   const beacon = new Image();
   beacon.referrerPolicy = 'no-referrer';
+  beacon.onload = () => onDelivered?.();
   beacon.src = url.toString();
 }
 
@@ -40,7 +104,7 @@ export function createEventTracker({ endpoint = '', now = () => Date.now(), send
   const eventSender = send ?? ((payload) => sendGoatCounterEvent(endpoint, payload));
 
   return {
-    track(eventName) {
+    track(eventName, options = {}) {
       if (!canTrack || !isAllowedEvent(eventName)) return false;
 
       const currentTime = now();
@@ -50,7 +114,7 @@ export function createEventTracker({ endpoint = '', now = () => Date.now(), send
 
       lastEventTime.set(eventName, currentTime);
       try {
-        eventSender({ path: eventName, title: EVENT_TITLES[eventName], event: true });
+        eventSender({ path: eventName, title: EVENT_TITLES[eventName], event: true }, options?.onDelivered);
         return true;
       } catch {
         return false;
