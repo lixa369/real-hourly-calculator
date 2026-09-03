@@ -12,11 +12,11 @@
   <body>
     <main class="app-shell">
       <section class="view is-active home-view" data-view="home" aria-labelledby="home-title">
-        <div class="brand-lockup"><span class="brand-mark" aria-hidden="true">¥</span><span>打工人真实时薪计算器</span></div>
+        <div class="brand-lockup"><span class="brand-mark" aria-hidden="true">¥</span><span>打工人实用工具</span></div>
         <div class="hero-copy">
           <p class="eyebrow">给自己的时间算笔明白账</p>
-          <h1 id="home-title">看看你的每小时投入，<br />能换来多少回报。</h1>
-          <p>把时间、通勤和日常开销一起算一算，帮你更了解自己的工作节奏。</p>
+          <h1 id="home-title">给自己的生活，<br />算几笔明白账。</h1>
+          <p>从工作投入到存钱计划，用简单的工具看清下一步。</p>
         </div>
         <div class="hero-graphic" aria-hidden="true">
           <div class="sun"></div><div class="coin coin-one">¥</div><div class="coin coin-two">¥</div>
@@ -24,7 +24,11 @@
           <div class="desk"><span></span></div>
         </div>
         <div class="home-actions">
-          <button class="button button-primary" type="button" data-action="start">开始计算 <span aria-hidden="true">→</span></button>
+          <p class="tool-list-title">工具</p>
+          <div class="tool-list" aria-label="工具列表">
+            <button class="tool-entry" type="button" data-action="hourly-form"><span class="tool-entry-icon" aria-hidden="true">时</span><span><b>时薪计算器</b><small>算一算每小时综合回报</small></span><i aria-hidden="true">→</i></button>
+            <button class="tool-entry" type="button" data-action="savings-form"><span class="tool-entry-icon tool-entry-icon-savings" aria-hidden="true">存</span><span><b>存钱目标计算器</b><small>看看多久能存够钱</small></span><i aria-hidden="true">→</i></button>
+          </div>
           <p class="privacy-note"><span aria-hidden="true">✓</span> 免费使用 · 数据仅在本地计算</p>
         </div>
       </section>
@@ -59,6 +63,36 @@
         <section class="yearly-insight"><span class="calendar-icon" aria-hidden="true">12</span><div><p>一年投入在工作上的时间</p><strong><span data-result="annualTotalHours"></span> 小时 · 约 <span data-result="equivalentDays"></span> 天</strong><small>如果把这些时间连续放在一起，大约相当于 <span data-result="equivalentDaysCopy"></span> 天。看见这些投入，也是在认真看见自己的努力。</small></div></section>
         <aside class="disclaimer">以上结果仅根据你填写的数据进行估算，不代表法律意义上的工资、劳动报酬或税务结果。本工具不会上传你的输入数据，计算在当前设备本地完成。</aside>
         <div class="result-actions"><button class="button button-secondary" type="button" data-action="form">重新计算</button><button class="button button-primary" type="button" data-action="share">分享我的结果 <span aria-hidden="true">↗</span></button></div><p class="share-status" aria-live="polite"></p>
+      </section>
+
+      <section class="view form-view" data-view="savings-form" aria-labelledby="savings-form-title" hidden>
+        <header class="page-header"><button class="icon-button" type="button" data-action="home" aria-label="返回首页">←</button><p class="step">填写 3 项信息</p></header>
+        <div class="page-intro"><p class="eyebrow">把目标拆成每个月</p><h1 id="savings-form-title">看看还要多久，<br />能存够这笔钱</h1><p>输入目标、已有存款和每月计划，结果会在这台设备上即时计算。</p></div>
+        <form id="savings-form" novalidate>
+          <div class="field-list">
+            <label class="field"><span class="field-title">目标金额</span><span class="input-wrap"><input name="targetAmount" type="number" min="0.01" step="0.01" inputmode="decimal" value="10000" required /><em>元</em></span><small>想为自己存下的总金额。</small><span class="field-error" data-savings-error-for="targetAmount"></span></label>
+            <label class="field"><span class="field-title">当前已有存款</span><span class="input-wrap"><input name="currentSavings" type="number" min="0" step="0.01" inputmode="decimal" value="3000" required /><em>元</em></span><small>已经为这个目标准备好的金额。</small><span class="field-error" data-savings-error-for="currentSavings"></span></label>
+            <label class="field"><span class="field-title">每月计划存入金额</span><span class="input-wrap"><input name="monthlyContribution" type="number" min="0.01" step="0.01" inputmode="decimal" value="2000" required /><em>元/月</em></span><small>按你觉得舒服、能长期坚持的计划填写。</small><span class="field-error" data-savings-error-for="monthlyContribution"></span></label>
+          </div>
+          <button class="button button-primary" type="submit">计算我的存钱计划 <span aria-hidden="true">→</span></button>
+        </form>
+      </section>
+
+      <section class="view results-view savings-results-view" data-view="savings-results" aria-labelledby="savings-results-title" hidden>
+        <header class="page-header"><button class="icon-button" type="button" data-action="savings-form" aria-label="返回修改">←</button><p class="step">你的存钱计划</p></header>
+        <div class="results-intro"><p class="eyebrow">目标正在变得清楚</p><h1 id="savings-results-title">每一笔存下的钱，<br />都在靠近目标</h1></div>
+        <article class="hero-result savings-hero-result" data-savings-state="in-progress">
+          <p>距离目标</p><strong data-savings-result="remainingAmount">¥0.00</strong>
+          <div class="result-divider"></div><p class="hero-result-copy" data-savings-result="summary">按照目前的计划，正在计算预计达成时间。</p>
+        </article>
+        <section class="savings-complete" data-savings-complete hidden><strong>恭喜，你已经达到存钱目标！</strong><p>现在可以为下一个想实现的目标继续规划。</p></section>
+        <section class="savings-progress" aria-labelledby="savings-progress-title"><div class="section-heading"><h2 id="savings-progress-title">存钱进度</h2><span data-savings-result="progressPercent">0%</span></div><div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="存钱目标完成进度"><span class="progress-fill" data-savings-progress></span></div><p>当前存款 <b data-savings-result="currentSavings">¥0.00</b> / 目标 <b data-savings-result="targetAmount">¥0.00</b></p><small>已完成 <span data-savings-result="progressPercentCopy">0%</span></small></section>
+        <section class="metrics-section" aria-labelledby="savings-metrics-title"><div class="section-heading"><h2 id="savings-metrics-title">预计安排</h2><span>按月计算</span></div><div class="metrics-grid savings-metrics-grid">
+          <article class="metric"><p>预计还需</p><strong data-savings-result="estimatedMonths">0 个月</strong></article><article class="metric"><p>预计时间</p><strong data-savings-result="duration">0 年 0 个月</strong></article>
+          <article class="metric"><p>预计达成日期</p><strong data-savings-result="targetDate">--</strong></article><article class="metric"><p>最后一个月存入</p><strong data-savings-result="finalMonthAmount">¥0.00</strong></article>
+        </div></section>
+        <aside class="disclaimer">以上结果根据你填写的金额和每月计划进行估算，仅供个人规划参考。所有输入和计算都只在当前设备完成。</aside>
+        <div class="result-actions"><button class="button button-secondary" type="button" data-action="savings-form">修改计划</button><button class="button button-primary" type="button" data-action="home">查看其他工具 <span aria-hidden="true">→</span></button></div>
       </section>
     </main>
     <script type="module" src="assets/app.js"></script>
