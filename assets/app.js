@@ -6,6 +6,10 @@ const form = document.querySelector('#calculator-form');
 const savingsForm = document.querySelector('#savings-form');
 const views = document.querySelectorAll('[data-view]');
 const shareStatus = document.querySelector('.share-status');
+const drawer = document.querySelector('#tool-drawer');
+const drawerBackdrop = document.querySelector('#drawer-backdrop');
+const drawerOpeners = document.querySelectorAll('[data-action="drawer-open"]');
+let drawerOpener = null;
 const description = document.querySelector('meta[name="description"]');
 const hourlySeo = {
   title: '打工人真实时薪计算器',
@@ -31,6 +35,37 @@ function trackAnalyticsEvent(eventName) {
   analyticsReady.then((analytics) => analytics.track(eventName));
 }
 
+function setDrawerCurrentTool(viewName) {
+  const tool = viewName.startsWith('savings') ? 'savings' : 'hourly';
+  document.querySelectorAll('[data-drawer-tool]').forEach((button) => {
+    const current = button.dataset.drawerTool === tool;
+    button.classList.toggle('is-current', current);
+    if (current) button.setAttribute('aria-current', 'true');
+    else button.removeAttribute('aria-current');
+  });
+}
+
+function openDrawer(opener) {
+  drawerOpener = opener;
+  drawer.classList.add('is-open');
+  drawer.setAttribute('aria-hidden', 'false');
+  drawerBackdrop.hidden = false;
+  document.body.classList.add('drawer-open');
+  drawerOpeners.forEach((button) => button.setAttribute('aria-expanded', 'true'));
+  drawer.querySelector('.drawer-tool.is-current')?.focus();
+}
+
+function closeDrawer({ restoreFocus = true } = {}) {
+  drawer.classList.remove('is-open');
+  drawer.setAttribute('aria-hidden', 'true');
+  drawerBackdrop.hidden = true;
+  document.body.classList.remove('drawer-open');
+  drawerOpeners.forEach((button) => button.setAttribute('aria-expanded', 'false'));
+  if (restoreFocus) drawerOpener?.focus();
+}
+
+setDrawerCurrentTool('home');
+
 function showView(name) {
   views.forEach((view) => {
     const active = view.dataset.view === name;
@@ -40,6 +75,7 @@ function showView(name) {
   const seo = name.startsWith('savings') ? savingsSeo : hourlySeo;
   document.title = seo.title;
   description.setAttribute('content', seo.description);
+  setDrawerCurrentTool(name);
   window.scrollTo({ top: 0, behavior: 'auto' });
 }
 
@@ -205,14 +241,30 @@ async function shareResult() {
 document.querySelectorAll('[data-action]').forEach((button) => {
   button.addEventListener('click', () => {
     const action = button.dataset.action;
+    if (action === 'drawer-open') {
+      openDrawer(button);
+      return;
+    }
+    if (action === 'drawer-close') {
+      closeDrawer();
+      return;
+    }
     if (action === 'start' || action === 'form' || action === 'hourly-form') {
       if ((action === 'form' || action === 'hourly-form') && lastResult) trackAnalyticsEvent('calculator_reset');
       showView('form');
+      if (button.closest('#tool-drawer')) closeDrawer({ restoreFocus: false });
     }
-    if (action === 'savings-form') showView('savings-form');
+    if (action === 'savings-form') {
+      showView('savings-form');
+      if (button.closest('#tool-drawer')) closeDrawer({ restoreFocus: false });
+    }
     if (action === 'home') showView('home');
     if (action === 'share') shareResult();
   });
+});
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && drawer.classList.contains('is-open')) closeDrawer();
 });
 
 form.addEventListener('submit', (event) => {
