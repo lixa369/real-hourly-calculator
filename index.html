@@ -8,11 +8,12 @@
     <title>打工人真实时薪计算器</title>
     <link rel="stylesheet" href="assets/styles.css" />
     <link rel="stylesheet" href="assets/compatibility.css" />
+    <link rel="stylesheet" href="assets/drawer.css" />
   </head>
   <body>
     <main class="app-shell">
       <section class="view is-active home-view" data-view="home" aria-labelledby="home-title">
-        <div class="brand-lockup"><span class="brand-mark" aria-hidden="true">¥</span><span>打工人实用工具</span></div>
+        <div class="brand-lockup"><button class="drawer-button" type="button" data-action="drawer-open" aria-label="打开工具栏" aria-expanded="false">☰</button><span class="brand-mark" aria-hidden="true">¥</span><span>打工人实用工具</span></div>
         <div class="hero-copy">
           <p class="eyebrow">给自己的时间算笔明白账</p>
           <h1 id="home-title">给自己的生活，<br />算几笔明白账。</h1>
@@ -34,7 +35,7 @@
       </section>
 
       <section class="view form-view" data-view="form" aria-labelledby="form-title" hidden>
-        <header class="page-header"><button class="icon-button" type="button" data-action="home" aria-label="返回首页">←</button><p class="step">填写 6 项信息</p></header>
+        <header class="page-header"><button class="icon-button" type="button" data-action="drawer-open" aria-label="打开工具栏" aria-expanded="false">☰</button><p class="step">填写 6 项信息</p></header>
         <div class="page-intro"><p class="eyebrow">慢慢填，不着急</p><h1 id="form-title">先告诉我你的<br />工作情况</h1><p>所有数据都只在这台设备上计算。</p></div>
         <form id="calculator-form" novalidate>
           <div class="field-list">
@@ -50,7 +51,7 @@
       </section>
 
       <section class="view results-view" data-view="results" aria-labelledby="results-title" hidden>
-        <header class="page-header"><button class="icon-button" type="button" data-action="form" aria-label="返回修改">←</button><p class="step">你的计算结果</p></header>
+        <header class="page-header"><button class="icon-button" type="button" data-action="drawer-open" aria-label="打开工具栏" aria-expanded="false">☰</button><p class="step">你的计算结果</p></header>
         <div class="results-intro"><p class="eyebrow">看见投入，也看见自己</p><h1 id="results-title">这是一份属于你的<br />投入参考</h1></div>
         <article class="hero-result"><p>每小时综合回报参考</p><strong data-result="comprehensiveHourlyRate">¥0.00</strong><span>/ 小时</span><div class="result-divider"></div><p class="hero-result-copy">按你填写的情况估算，你每投入一小时，综合回报约为 <b data-result="comprehensiveHourlyRateCopy">¥0.00 / 小时</b>。这份结果帮你看见时间和成本的投入，不定义你的价值。</p></article>
         <section class="tip-section" aria-label="参考提示"><span class="tip-icon" aria-hidden="true">✦</span><p data-result="message"></p><small>每一份工作都有不容易的地方。这是根据已填写数据生成的参考，不评价你的工作或选择。</small></section>
@@ -66,7 +67,7 @@
       </section>
 
       <section class="view form-view" data-view="savings-form" aria-labelledby="savings-form-title" hidden>
-        <header class="page-header"><button class="icon-button" type="button" data-action="home" aria-label="返回首页">←</button><p class="step">填写 3 项信息</p></header>
+        <header class="page-header"><button class="icon-button" type="button" data-action="drawer-open" aria-label="打开工具栏" aria-expanded="false">☰</button><p class="step">填写 3 项信息</p></header>
         <div class="page-intro"><p class="eyebrow">把目标拆成每个月</p><h1 id="savings-form-title">看看还要多久，<br />能存够这笔钱</h1><p>输入目标、已有存款和每月计划，结果会在这台设备上即时计算。</p></div>
         <form id="savings-form" novalidate>
           <div class="field-list">
@@ -79,7 +80,7 @@
       </section>
 
       <section class="view results-view savings-results-view" data-view="savings-results" aria-labelledby="savings-results-title" hidden>
-        <header class="page-header"><button class="icon-button" type="button" data-action="savings-form" aria-label="返回修改">←</button><p class="step">你的存钱计划</p></header>
+        <header class="page-header"><button class="icon-button" type="button" data-action="drawer-open" aria-label="打开工具栏" aria-expanded="false">☰</button><p class="step">你的存钱计划</p></header>
         <div class="results-intro"><p class="eyebrow">目标正在变得清楚</p><h1 id="savings-results-title">每一笔存下的钱，<br />都在靠近目标</h1></div>
         <article class="hero-result savings-hero-result" data-savings-state="in-progress">
           <p>距离目标</p><strong data-savings-result="remainingAmount">¥0.00</strong>
@@ -95,6 +96,14 @@
         <div class="result-actions"><button class="button button-secondary" type="button" data-action="savings-form">修改计划</button><button class="button button-primary" type="button" data-action="home">查看其他工具 <span aria-hidden="true">→</span></button></div>
       </section>
     </main>
+    <div class="drawer-backdrop" id="drawer-backdrop" data-action="drawer-close" hidden></div>
+    <aside class="tool-drawer" id="tool-drawer" aria-hidden="true" aria-label="工具栏">
+      <div class="drawer-heading"><strong>工具</strong><button class="icon-button" type="button" data-action="drawer-close" aria-label="关闭工具栏">×</button></div>
+      <nav class="drawer-tools" aria-label="工具导航">
+        <button class="drawer-tool" type="button" data-action="hourly-form" data-drawer-tool="hourly"><span class="tool-entry-icon" aria-hidden="true">时</span><span><b>时薪计算器</b><small>算一算每小时综合回报</small></span></button>
+        <button class="drawer-tool" type="button" data-action="savings-form" data-drawer-tool="savings"><span class="tool-entry-icon tool-entry-icon-savings" aria-hidden="true">存</span><span><b>存钱目标计算器</b><small>看看多久能存够钱</small></span></button>
+      </nav>
+    </aside>
     <script type="module" src="assets/app.js"></script>
   </body>
 </html>
